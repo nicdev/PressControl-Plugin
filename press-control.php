@@ -65,8 +65,8 @@ class pressControl {
 	 */
 
 	public function adminPanelRender(){
-	
-		echo file_get_contents(dirname(__FILE__) . '/views/options-page.php');
+		
+		include(dirname(__FILE__) . '/views/options-page.php');
 	
 	}
 
@@ -86,8 +86,9 @@ class pressControl {
 			wp_schedule_event(time() + 60, 'hourly', 'pc_check_themes_hook'); 	
 		}
 		
-		add_action('pc_check_plugins_hook', array($this,'pcCheckPlugins'));
-		add_action('pc_check_themes_hook', array($this,'pcCheckThemes'));
+		add_action('pc_check_plugins_hook', array($this, 'pcCheckPlugins'));
+		add_action('pc_check_themes_hook', array($this, 'pcCheckThemes'));
+		add_action('pc_submit_data', array($this, 'pcSubmitData'));
 		
 	}
 
@@ -96,8 +97,9 @@ class pressControl {
 	 * @return array
 	 */
 	
-	protected function pcCheckPlugins(){
+	public function pcCheckPlugins(){
 		$all_plugins = get_plugins();
+		add_option('pc_plugins', $all_plugins);
 	}
 
 	/**
@@ -105,8 +107,20 @@ class pressControl {
 	 * @return array
 	 */
 	
-	protected function pcCheckThemes(){
-		$all_plugins = wp_get_themes();
+	public function pcCheckThemes(){
+		$all_themes = wp_get_themes();
+		add_option('pc_themes', $all_themes);
+	}
+
+	/**
+	 * Submit data to Press Control
+	 */
+	
+	public function pcSubmitData(){
+		$data['plugins'] = get_option('pc_plugins');
+		$data['themes'] = get_option('pc_themes');
+
+		//json encode and send
 	}
 
 }
