@@ -50,17 +50,29 @@ class pressControl {
 		wp_clear_scheduled_hook('pc_check_themes_hook');
 	}
 
+	/**
+	 * Add options panel
+	 */
+
 	public function adminPanel(){
 
 		add_management_page('Press Control', 'Press Control', 'activate_plugins', 'press-control-options', array('pressControl', 'adminPanelRender'));
 
 	}
 
+	/**
+	 * Render options panel
+	 */
+
 	public function adminPanelRender(){
 	
 		echo file_get_contents(dirname(__FILE__) . '/views/options-page.php');
 	
 	}
+
+	/**
+	 * Schedule cron jobs
+	 */
 
 	public function secheduleJobs(){
 
@@ -79,10 +91,20 @@ class pressControl {
 		
 	}
 
+	/**
+	 * Check for installed plugins
+	 * @return array
+	 */
+	
 	protected function pcCheckPlugins(){
 		$all_plugins = get_plugins();
 	}
 
+	/**
+	 * Check for installed themes
+	 * @return array
+	 */
+	
 	protected function pcCheckThemes(){
 		$all_plugins = wp_get_themes();
 	}
