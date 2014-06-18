@@ -57,17 +57,14 @@ class pressControl {
 	}
 
 	public function adminPanelRender(){
-		//$test = get_option('cron'); 
-		echo '<pre>';
-		//print_r($test);
-		var_dump(wp_get_schedule('pc_check_themes_hook'));
+	
 		echo file_get_contents(dirname(__FILE__) . '/views/options-page.php');
 	
 	}
 
 	public function secheduleJobs(){
 
-		if(!wp_next_scheduled('pc_check_plugins_hook')
+		if(!wp_next_scheduled('pc_check_plugins_hook'))
 		{
 			wp_schedule_event(time() + 60, 'hourly', 'pc_check_plugins_hook'); 	
 		}
@@ -80,7 +77,6 @@ class pressControl {
 		add_action('pc_check_plugins_hook', array($this,'pcCheckPlugins'));
 		add_action('pc_check_themes_hook', array($this,'pcCheckThemes'));
 		
-
 	}
 
 	protected function pcCheckPlugins(){
