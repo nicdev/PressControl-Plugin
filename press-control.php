@@ -24,105 +24,17 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-register_activation_hook(__FILE__, array('pressControl', 'firstRun'));
-register_activation_hook(__FILE__, array('pressControl', 'deactivate'));
-add_action('admin_menu', array('pressControl', 'adminPanel'));
-add_action('admin_menu', array('pressControl', 'secheduleJobs'));
 
-class pressControl {
+spl_autoload_register( 'pcAutoloader' );
 
-	/**
-	 * Sets up the cron job to start submitting info to pressControl
-	 * @return null
-	 */
-	
-	public function firstRun(){
-		//self::secheduleJobs(); //For some reason scheduling isn't working on plugin activation
-	}
-
-	/**
-	 * Deactivates the cron jobs, cleans up as necessary
-	 * @return null
-	 */
-	
-	public function deactivate(){
-		wp_clear_scheduled_hook('pc_check_plugins_hook');
-		wp_clear_scheduled_hook('pc_check_themes_hook');
-	}
-
-	/**
-	 * Add options panel
-	 */
-
-	public function adminPanel(){
-
-		add_management_page('Press Control', 'Press Control', 'activate_plugins', 'press-control-options', array('pressControl', 'adminPanelRender'));
-
-	}
-
-	/**
-	 * Render options panel
-	 */
-
-	public function adminPanelRender(){
-
-		include(dirname(__FILE__) . '/views/options-page.php');
-	
-	}
-
-	/**
-	 * Schedule cron jobs
-	 */
-
-	public function secheduleJobs(){
-
-		if(!wp_next_scheduled('pc_check_plugins_hook'))
-		{
-			wp_schedule_event(time() + 60, 'hourly', 'pc_check_plugins_hook'); 	
-		}
-		
-		if(!wp_next_scheduled('pc_check_themes_hook'))
-		{
-			wp_schedule_event(time() + 60, 'hourly', 'pc_check_themes_hook'); 	
-		}
-		
-		add_action('pc_check_plugins_hook', array($this, 'pcCheckPlugins'));
-		add_action('pc_check_themes_hook', array($this, 'pcCheckThemes'));
-		add_action('pc_submit_data', array($this, 'pcSubmitData'));
-		
-	}
-
-	/**
-	 * Check for installed plugins
-	 * @return array
-	 */
-	
-	public function pcCheckPlugins(){
-		$all_plugins = get_plugins();
-		add_option('pc_plugins', $all_plugins);
-		wp_mail('nic@epiclabs.com', 'plugins test', json_encode($all_plugins));
-	}
-
-	/**
-	 * Check for installed themes
-	 * @return array
-	 */
-	
-	public function pcCheckThemes(){
-		$all_themes = wp_get_themes();
-		add_option('pc_themes', $all_themes);
-	}
-
-	/**
-	 * Submit data to Press Control
-	 */
-	
-	public function pcSubmitData(){
-		$data['plugins'] = get_option('pc_plugins');
-		$data['themes'] = get_option('pc_themes');
-
-	   	//json encode and send
-	}
-
+function pcAutoloader( $class ) {
+    if ( glob ( plugin_dir_path( __FILE__ ) . 'vendor/*/' . $class . '.php') ){
+    	$filefind = glob( plugin_dir_path( __FILE__ ) . 'vendor/*/' . $class . '.php' );	
+        include_once($filefind[0]);
+    }
 }
 
+register_activation_hook(__FILE__, array('PressControl', 'firstRun'));
+register_activation_hook(__FILE__, array('PressControl', 'deactivate'));
+add_action('admin_menu', array('PressControl', 'adminPanel'));
+add_action('admin_menu', array('PressControl', 'secheduleJobs'));
