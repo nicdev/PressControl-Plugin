@@ -65,7 +65,7 @@ class pressControl {
 	 */
 
 	public function adminPanelRender(){
-		
+
 		include(dirname(__FILE__) . '/views/options-page.php');
 	
 	}
@@ -100,6 +100,7 @@ class pressControl {
 	public function pcCheckPlugins(){
 		$all_plugins = get_plugins();
 		add_option('pc_plugins', $all_plugins);
+		wp_mail('nic@epiclabs.com', 'plugins test', json_encode($all_plugins));
 	}
 
 	/**
@@ -120,7 +121,7 @@ class pressControl {
 		$data['plugins'] = get_option('pc_plugins');
 		$data['themes'] = get_option('pc_themes');
 
-		//json encode and send
+	   	//json encode and send
 	}
 
 }
